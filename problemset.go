@@ -15,6 +15,7 @@ type ProblemsResponse struct {
 }
 
 func (c *Client) GetProblems(ctx context.Context, tags []string) (*ProblemsResponse, error) {
+	c.Logger.Println("GetProblems tags: ", tags)
 	v := url.Values{}
 	v.Add("tags", strings.Join(tags, ";"))
 	spath := "/problemset.problems" + "?" + v.Encode()
