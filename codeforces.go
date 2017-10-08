@@ -11,14 +11,18 @@ import (
 	"path"
 )
 
+const (
+	baseURL = "http://codeforces.com/api"
+)
+
 type Client struct {
 	URL        *url.URL
 	HTTPClient *http.Client
 	Logger     *log.Logger
 }
 
-func NewClient(urlStr string, logger *log.Logger) (*Client, error) {
-	parsedURL, err := url.ParseRequestURI(urlStr)
+func NewClient(logger *log.Logger) (*Client, error) {
+	parsedURL, err := url.ParseRequestURI(baseURL)
 	if err != nil {
 		return nil, err
 	}
