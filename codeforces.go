@@ -31,7 +31,7 @@ func NewClient(logger *log.Logger) (*Client, error) {
 	if logger == nil {
 		logger = discardLogger
 	}
-	return &Client{URL: parsedURL, Logger: logger}, nil
+	return &Client{URL: parsedURL, HTTPClient: http.DefaultClient, Logger: logger}, nil
 }
 
 func (c *Client) newRequest(ctx context.Context, method, spath string, body io.Reader) (*http.Request, error) {
