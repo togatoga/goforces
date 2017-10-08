@@ -2,6 +2,7 @@ package goforces
 
 import (
 	"context"
+	"encoding/json"
 	"io"
 	"io/ioutil"
 	"log"
@@ -38,4 +39,10 @@ func (c *Client) newRequest(ctx context.Context, method, spath string, body io.R
 	}
 	req = req.WithContext(ctx)
 	return req, nil
+}
+
+func decodeBody(resp *http.Response, out interface{}) error {
+	defer resp.Body.Close()
+	decoder := json.NewDecoder(resp.Body)
+	return decoder.Decode(out)
 }
