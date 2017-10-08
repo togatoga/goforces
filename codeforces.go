@@ -1,10 +1,13 @@
 package goforces
 
 import (
-	"net/url"
-	"net/http"
-	"log"
+	"context"
+	"io"
 	"io/ioutil"
+	"log"
+	"net/http"
+	"net/url"
+	"path"
 )
 
 type Client struct {
@@ -23,4 +26,16 @@ func NewClient(urlStr string, logger *log.Logger) (*Client, error) {
 		logger = discardLogger
 	}
 	return &Client{URL: parsedURL, Logger: logger}, nil
+}
+
+func (c *Client) newRequest(ctx context.Context, method, spath string, body io.Reader) (*http.Request, error) {
+	u := *c.URL
+	u.Path = path.Join(c.URL.Path, spath)
+
+	req, err := http.NewRequest(method, u.String(), body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	return req, nil
 }
