@@ -2,19 +2,17 @@ package goforces
 
 import (
 	"context"
+	"fmt"
 	"net/url"
 	"strings"
 )
 
-type ProblemsResponse struct {
-	Status string `json:"status"`
-	Result struct {
-		Problems          []Problem           `json:"problems"`
-		ProblemStatistics []ProblemStatistics `json:"problemStatistics"`
-	} `json:"result"`
+type Problems struct {
+	Problems          []Problem           `json:"problems"`
+	ProblemStatistics []ProblemStatistics `json:"problemStatistics"`
 }
 
-func (c *Client) GetProblems(ctx context.Context, tags []string) (*ProblemsResponse, error) {
+func (c *Client) GetProblems(ctx context.Context, tags []string) (*Problems, error) {
 	c.Logger.Println("GetProblems tags: ", tags)
 	v := url.Values{}
 	v.Add("tags", strings.Join(tags, ";"))
@@ -27,9 +25,19 @@ func (c *Client) GetProblems(ctx context.Context, tags []string) (*ProblemsRespo
 	if err != nil {
 		return nil, err
 	}
-	var problemResponse ProblemsResponse
-	if err := decodeBody(res, &problemResponse); err != nil {
+	type ProblemsResponse struct {
+		Status string   `json:"status"`
+		Result Problems `json:"result"`
+	}
+	var resp ProblemsResponse
+	if err := decodeBody(res, &resp); err != nil {
 		return nil, err
 	}
-	return &problemResponse, nil
+	//check status
+	if resp.Status != "OK" {
+		return nil, fmt.Errorf("Status Error: %s", res.Status)
+	}
+	var problems Problems
+	problems = resp.Result
+	return &problems, nil
 }
