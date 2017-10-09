@@ -34,7 +34,7 @@ func (c *Client) GetProblems(ctx context.Context, tags []string) (*Problems, err
 		return nil, err
 	}
 	//check status
-	if res.Status != "OK" {
+	if resp.Status != "OK" {
 		return nil, fmt.Errorf("Status Error: %s", res.Status)
 	}
 	var problems Problems
