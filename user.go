@@ -57,3 +57,39 @@ func (c *Client) GetUserInfo(ctx context.Context, handles []string) ([]User, err
 	user = resp.Result
 	return user, nil
 }
+
+func (c *Client) GetUserRatedList(ctx context.Context, activeOnly bool) ([]User, error) {
+	type UserRatedListResponse struct {
+		Status string `json:"status"`
+		Result []User `json:"result"`
+	}
+
+	v := url.Values{}
+
+	//check activeOnly
+	if activeOnly {
+		v.Add("activeOnly", "true")
+	}
+	spath := "/user.ratedList" + "?" + v.Encode()
+	req, err := c.newRequest(ctx, "GET", spath, nil)
+	if err != nil {
+		return nil, err
+	}
+	res, err := c.HTTPClient.Do(req)
+	if err != nil {
+		return nil, err
+	}
+
+	var resp UserRatedListResponse
+	if err := decodeBody(res, &resp); err != nil {
+		return nil, err
+	}
+
+	//check status
+	if resp.Status != "OK" {
+		return nil, fmt.Errorf("Status Error : %s", resp.Status)
+	}
+	var user []User
+	user = resp.Result
+	return user, nil
+}
