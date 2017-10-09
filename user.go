@@ -93,3 +93,7 @@ func (c *Client) GetUserRatedList(ctx context.Context, activeOnly bool) ([]User,
 	user = resp.Result
 	return user, nil
 }
+
+func (c *Client) GetUserRating(ctx context.Context, handle string) (RatingChange, error) {
+	//TODO
+}
