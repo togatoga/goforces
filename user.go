@@ -1,5 +1,12 @@
 package goforces
 
+import (
+	"context"
+	"fmt"
+	"net/url"
+	"strings"
+)
+
 type User struct {
 	LastName                string `json:"lastName"`
 	Country                 string `json:"country"`
@@ -19,11 +26,34 @@ type User struct {
 	MaxRank                 string `json:"maxRank"`
 }
 
-type UserInfoResponse struct {
-	Status string `json:"status"`
-	Result []User `json:"result"`
-}
+func (c *Client) GetUserInfo(ctx context.Context, handles []string) ([]User, error) {
+	type UserInfoResponse struct {
+		Status string `json:"status"`
+		Result []User `json:"result"`
+	}
 
-func (c *Client) GetUserInfo(handles []string) (*UserInfoResponse, error) {
-	return nil, nil
+	v := url.Values{}
+	v.Add("handles", strings.Join(handles, ";"))
+	spath := "/user.info" + "?" + v.Encode()
+	req, err := c.newRequest(ctx, "GET", spath, nil)
+	if err != nil {
+		return nil, err
+	}
+	res, err := c.HTTPClient.Do(req)
+	if err != nil {
+		return nil, err
+	}
+
+	var resp UserInfoResponse
+	if err := decodeBody(res, &resp); err != nil {
+		return nil, err
+	}
+
+	//check status
+	if resp.Status != "OK" {
+		return nil, fmt.Errorf("Status Error : %s", resp.Status)
+	}
+	var user []User
+	user = resp.Result
+	return user, nil
 }
