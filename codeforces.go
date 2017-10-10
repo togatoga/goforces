@@ -9,7 +9,6 @@ import (
 	"log"
 	"net/http"
 	"net/url"
-	"path"
 )
 
 const (
@@ -35,10 +34,7 @@ func NewClient(logger *log.Logger) (*Client, error) {
 }
 
 func (c *Client) newRequest(ctx context.Context, method, spath string, body io.Reader) (*http.Request, error) {
-	u := *c.URL
-	u.Path = path.Join(c.URL.Path, spath)
-
-	req, err := http.NewRequest(method, u.String(), body)
+	req, err := http.NewRequest(method, c.URL.String()+spath, body)
 	if err != nil {
 		return nil, err
 	}
