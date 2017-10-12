@@ -50,3 +50,33 @@ func (c *Client) GetBlogEntryComments(ctx context.Context, blogEntryId int) ([]C
 	comments = resp.Result
 	return comments, nil
 }
+
+func (c *Client) GetBlogEntryView(ctx context.Context, blogEntryId int) (*BlogEntry, error) {
+	c.Logger.Println("GetBlogEntryView blogEntryId: ", blogEntryId)
+	v := url.Values{}
+	v.Add("blogEntryId", strconv.Itoa(blogEntryId))
+	spath := "/blogEntry.view" + "?" + v.Encode()
+	req, err := c.newRequest(ctx, "GET", spath, nil)
+	if err != nil {
+		return nil, err
+	}
+	res, err := c.HTTPClient.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	type EntryViewResponse struct {
+		Status string    `json:"status"`
+		Result BlogEntry `json:"result"`
+	}
+	var resp EntryViewResponse
+	if err := decodeBody(res, &resp); err != nil {
+		return nil, err
+	}
+	//check status
+	if resp.Status != "OK" {
+		return nil, fmt.Errorf("Status Error: %s", res.Status)
+	}
+	var blogEntry BlogEntry
+	blogEntry = resp.Result
+	return &blogEntry, nil
+}
