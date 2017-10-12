@@ -24,7 +24,7 @@ type BlogEntry struct {
 func (c *Client) GetBlogEntryComments(ctx context.Context, blogEntryId int) ([]Comment, error) {
 	c.Logger.Println("GetBlogEntryComments blogEntryId: ", blogEntryId)
 	v := url.Values{}
-	v.Add("blogEntryID", strconv.Itoa(blogEntryId))
+	v.Add("blogEntryId", strconv.Itoa(blogEntryId))
 	spath := "/blogEntry.comments" + "?" + v.Encode()
 	req, err := c.newRequest(ctx, "GET", spath, nil)
 	if err != nil {
