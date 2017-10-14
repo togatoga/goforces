@@ -13,10 +13,16 @@ type Problems struct {
 	ProblemStatistics []ProblemStatistics `json:"problemStatistics"`
 }
 
-func (c *Client) GetProblemSetProblems(ctx context.Context, tags []string) (*Problems, error) {
-	c.Logger.Println("GetProblems tags: ", tags)
+func (c *Client) GetProblemSetProblems(ctx context.Context, options map[string]interface{}) (*Problems, error) {
+	c.Logger.Println("GetProblems : ", options)
 	v := url.Values{}
-	v.Add("tags", strings.Join(tags, ";"))
+
+	tags, ok := options["tags"]
+	if ok {
+		tagsVal := tags.([]string)
+		v.Add("tags", strings.Join(tagsVal, ";"))
+	}
+
 	spath := "/problemset.problems" + "?" + v.Encode()
 	req, err := c.newRequest(ctx, "GET", spath, nil)
 	if err != nil {
@@ -38,11 +44,13 @@ func (c *Client) GetProblemSetProblems(ctx context.Context, tags []string) (*Pro
 	if resp.Status != "OK" {
 		return nil, fmt.Errorf("Status Error: %s", res.Status)
 	}
+
 	return &resp.Result, nil
 }
 
 func (c *Client) GetProblemSetRecentStatus(ctx context.Context, count int) ([]Submission, error) {
 	c.Logger.Println("GetRecentStatus count: ", count)
+
 	if count <= 0 || count > 1000 {
 		return nil, fmt.Errorf("count value must be between 1 and 1000: %d", count)
 	}
@@ -70,5 +78,6 @@ func (c *Client) GetProblemSetRecentStatus(ctx context.Context, count int) ([]Su
 	if resp.Status != "OK" {
 		return nil, fmt.Errorf("Status Error: %s", res.Status)
 	}
+
 	return resp.Result, nil
 }
