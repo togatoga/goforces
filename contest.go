@@ -187,3 +187,61 @@ func (c *Client) GetContestStandings(ctx context.Context, contestId int, options
 
 	return &resp.Result, nil
 }
+
+func (c *Client) GetContestStatus(ctx context.Context, contestId int, options map[string]interface{}) ([]Submission, error) {
+	c.Logger.Println("GetContestStatus: ", contestId, options)
+
+	v := url.Values{}
+	v.Add("contestId", strconv.Itoa(contestId))
+
+	//check options
+	form, ok := options["from"]
+	if ok {
+		formVal := form.(int)
+		if formVal <= 0 {
+			return nil, fmt.Errorf("from must starts with 1-based index")
+		}
+		v.Add("from", strconv.Itoa(formVal))
+	}
+
+	count, ok := options["count"]
+	if ok {
+		countVal := count.(int)
+		if countVal <= 0 {
+			return nil, fmt.Errorf("count must be at least 1")
+		}
+		v.Add("count", strconv.Itoa(countVal))
+	}
+
+	handles, ok := options["handle"]
+	if ok {
+		handleVal := handles.(string)
+		v.Add("handle", handleVal)
+	}
+
+	spath := "/contest.status" + "?" + v.Encode()
+	req, err := c.newRequest(ctx, "GET", spath, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	res, err := c.HTTPClient.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	type Response struct {
+		Status string       `json:"status"`
+		Result []Submission `json:"result"`
+	}
+	var resp Response
+	if err := decodeBody(res, &resp); err != nil {
+		return nil, err
+	}
+
+	//check status
+	if resp.Status != "OK" {
+		return nil, fmt.Errorf("Status Error: %s", res.Status)
+	}
+
+	return resp.Result, nil
+}
