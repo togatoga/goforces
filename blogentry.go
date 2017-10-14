@@ -22,7 +22,7 @@ type BlogEntry struct {
 }
 
 func (c *Client) GetBlogEntryComments(ctx context.Context, blogEntryId int) ([]Comment, error) {
-	c.Logger.Println("GetBlogEntryComments blogEntryId: ", blogEntryId)
+	c.Logger.Println("GetBlogEntryComments : ", blogEntryId)
 	v := url.Values{}
 	v.Add("blogEntryId", strconv.Itoa(blogEntryId))
 	spath := "/blogEntry.comments" + "?" + v.Encode()
@@ -34,11 +34,11 @@ func (c *Client) GetBlogEntryComments(ctx context.Context, blogEntryId int) ([]C
 	if err != nil {
 		return nil, err
 	}
-	type EntryCommentsResponse struct {
+	type Response struct {
 		Status string    `json:"status"`
 		Result []Comment `json:"result"`
 	}
-	var resp EntryCommentsResponse
+	var resp Response
 	if err := decodeBody(res, &resp); err != nil {
 		return nil, err
 	}
@@ -46,13 +46,12 @@ func (c *Client) GetBlogEntryComments(ctx context.Context, blogEntryId int) ([]C
 	if resp.Status != "OK" {
 		return nil, fmt.Errorf("Status Error: %s", res.Status)
 	}
-	var comments []Comment
-	comments = resp.Result
-	return comments, nil
+
+	return resp.Result, nil
 }
 
 func (c *Client) GetBlogEntryView(ctx context.Context, blogEntryId int) (*BlogEntry, error) {
-	c.Logger.Println("GetBlogEntryView blogEntryId: ", blogEntryId)
+	c.Logger.Println("GetBlogEntryView : ", blogEntryId)
 	v := url.Values{}
 	v.Add("blogEntryId", strconv.Itoa(blogEntryId))
 	spath := "/blogEntry.view" + "?" + v.Encode()
@@ -76,7 +75,6 @@ func (c *Client) GetBlogEntryView(ctx context.Context, blogEntryId int) (*BlogEn
 	if resp.Status != "OK" {
 		return nil, fmt.Errorf("Status Error: %s", res.Status)
 	}
-	var blogEntry BlogEntry
-	blogEntry = resp.Result
-	return &blogEntry, nil
+
+	return &resp.Result, nil
 }
