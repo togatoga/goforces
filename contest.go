@@ -80,3 +80,34 @@ func (c *Client) GetContestList(ctx context.Context, gym bool) ([]Contest, error
 	contests = resp.Result
 	return contests, nil
 }
+
+func (c *Client) GetContestRatingChanges(ctx context.Context, contestId int) ([]RatingChange, error) {
+	c.Logger.Println("GetContestRatingChange contestId: ", contestId)
+	v := url.Values{}
+	v.Add("contestId", strconv.Itoa(contestId))
+	spath := "/contest.ratingChanges" + "?" + v.Encode()
+	req, err := c.newRequest(ctx, "GET", spath, nil)
+	if err != nil {
+		return nil, err
+	}
+	res, err := c.HTTPClient.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	type Response struct {
+		Status string         `json:"status"`
+		Result []RatingChange `json:"result"`
+	}
+	var resp Response
+	if err := decodeBody(res, &resp); err != nil {
+		return nil, err
+	}
+	//check status
+	if resp.Status != "OK" {
+		return nil, fmt.Errorf("Status Error: %s", res.Status)
+	}
+
+	var ratingChanges []RatingChange
+	ratingChanges = resp.Result
+	return ratingChanges, nil
+}
