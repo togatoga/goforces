@@ -49,12 +49,19 @@ func (c *Client) GetContestHacks(ctx context.Context, contestId int) ([]Hack, er
 	return hacks, nil
 }
 
-func (c *Client) GetContestList(ctx context.Context, gym bool) ([]Contest, error) {
-	c.Logger.Println("GetContestList gym: ", gym)
+func (c *Client) GetContestList(ctx context.Context, options map[string]interface{}) ([]Contest, error) {
+	c.Logger.Println("GetContestList : ", options)
 	v := url.Values{}
-	if gym {
-		v.Add("gym", "true")
+
+	//check options
+	gym, ok := options["gym"]
+	if ok {
+		gymVal := gym.(bool)
+		if gymVal {
+			v.Add("gym", "true")
+		}
 	}
+
 	spath := "/contest.list" + "?" + v.Encode()
 	req, err := c.newRequest(ctx, "GET", spath, nil)
 	if err != nil {
