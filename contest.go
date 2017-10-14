@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/url"
 	"strconv"
+	"strings"
 )
 
 type Contest struct {
@@ -110,4 +111,79 @@ func (c *Client) GetContestRatingChanges(ctx context.Context, contestId int) ([]
 	var ratingChanges []RatingChange
 	ratingChanges = resp.Result
 	return ratingChanges, nil
+}
+
+func (c *Client) GetContestStandings(ctx context.Context, contestId int, options map[string]interface{}) (*Standings, error) {
+	c.Logger.Println("GetContestStandings: ", contestId, options)
+
+	v := url.Values{}
+	v.Add("contestId", strconv.Itoa(contestId))
+
+	//check options
+	form, ok := options["from"]
+	if ok {
+		formVal := form.(int)
+		if formVal <= 0 {
+			return nil, fmt.Errorf("from must starts with 1-based index")
+		}
+		v.Add("from", strconv.Itoa(formVal))
+	}
+
+	count, ok := options["count"]
+	if ok {
+		countVal := count.(int)
+		if countVal <= 0 {
+			return nil, fmt.Errorf("count must be at least 1")
+		}
+		v.Add("count", strconv.Itoa(countVal))
+	}
+
+	handles, ok := options["handles"]
+	if ok {
+		handlesVal := handles.([]string)
+		v.Add("handles", strings.Join(handlesVal, ";"))
+	}
+
+	room, ok := options["room"]
+	if ok {
+		roomVal := room.(int)
+		if roomVal <= 0 {
+			return nil, fmt.Errorf("room must be at least 1")
+		}
+		v.Add("room", strconv.Itoa(roomVal))
+	}
+
+	showUnofficial, ok := options["showUnofficial"]
+	if ok {
+		showUnofficialVal := showUnofficial.(bool)
+		if showUnofficialVal {
+			v.Add("showUnofficial", "true")
+		}
+	}
+
+	spath := "/contest.standings" + "?" + v.Encode()
+	req, err := c.newRequest(ctx, "GET", spath, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	res, err := c.HTTPClient.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	type Response struct {
+		Status string    `json:"status"`
+		Result Standings `json:"result"`
+	}
+	var resp Response
+	if err := decodeBody(res, &resp); err != nil {
+		return nil, err
+	}
+
+	//check status
+	if resp.Status != "OK" {
+		return nil, fmt.Errorf("Status Error: %s", res.Status)
+	}
+
+	return &resp.Result, nil
 }
