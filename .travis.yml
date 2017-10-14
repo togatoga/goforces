@@ -5,3 +5,5 @@ go:
   - 1.9
 script:
   - go test -v
+notifications:
+  email: false
