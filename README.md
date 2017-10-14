@@ -1,2 +1,2 @@
 # goforces
-go-codeforces is go package for the codeforces api
+goforces is go package for the codeforces(http://codeforces.com/) api
