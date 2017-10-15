@@ -27,10 +27,7 @@ type User struct {
 }
 
 func (c *Client) GetUserInfo(ctx context.Context, handles []string) ([]User, error) {
-	type UserInfoResponse struct {
-		Status string `json:"status"`
-		Result []User `json:"result"`
-	}
+	c.Logger.Println("GetUserInfo :", handles)
 
 	v := url.Values{}
 	v.Add("handles", strings.Join(handles, ";"))
@@ -43,8 +40,11 @@ func (c *Client) GetUserInfo(ctx context.Context, handles []string) ([]User, err
 	if err != nil {
 		return nil, err
 	}
-
-	var resp UserInfoResponse
+	type Response struct {
+		Status string `json:"status"`
+		Result []User `json:"result"`
+	}
+	var resp Response
 	if err := decodeBody(res, &resp); err != nil {
 		return nil, err
 	}
@@ -53,23 +53,23 @@ func (c *Client) GetUserInfo(ctx context.Context, handles []string) ([]User, err
 	if resp.Status != "OK" {
 		return nil, fmt.Errorf("Status Error : %s", resp.Status)
 	}
-	var user []User
-	user = resp.Result
-	return user, nil
+
+	return resp.Result, nil
 }
 
-func (c *Client) GetUserRatedList(ctx context.Context, activeOnly bool) ([]User, error) {
-	type UserRatedListResponse struct {
-		Status string `json:"status"`
-		Result []User `json:"result"`
-	}
+func (c *Client) GetUserRatedList(ctx context.Context, options map[string]interface{}) ([]User, error) {
+	c.Logger.Println("GetUserRatedList :", options)
 
 	v := url.Values{}
-
 	//check activeOnly
-	if activeOnly {
-		v.Add("activeOnly", "true")
+	activeOnly, ok := options["activeOnly"]
+	if ok {
+		activeOnlyVal := activeOnly.(bool)
+		if activeOnlyVal {
+			v.Add("activeOnly", "true")
+		}
 	}
+
 	spath := "/user.ratedList" + "?" + v.Encode()
 	req, err := c.newRequest(ctx, "GET", spath, nil)
 	if err != nil {
@@ -79,8 +79,11 @@ func (c *Client) GetUserRatedList(ctx context.Context, activeOnly bool) ([]User,
 	if err != nil {
 		return nil, err
 	}
-
-	var resp UserRatedListResponse
+	type Response struct {
+		Status string `json:"status"`
+		Result []User `json:"result"`
+	}
+	var resp Response
 	if err := decodeBody(res, &resp); err != nil {
 		return nil, err
 	}
@@ -89,12 +92,11 @@ func (c *Client) GetUserRatedList(ctx context.Context, activeOnly bool) ([]User,
 	if resp.Status != "OK" {
 		return nil, fmt.Errorf("Status Error : %s", resp.Status)
 	}
-	var user []User
-	user = resp.Result
-	return user, nil
+
+	return resp.Result, nil
 }
 
 func (c *Client) GetUserRating(ctx context.Context, handle string) (interface{}, error) {
 	//TODO
-	return nil,nil
+	return nil, nil
 }
