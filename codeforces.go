@@ -23,7 +23,7 @@ type Client struct {
 	Logger     *log.Logger
 }
 
-func NewClient(apiKey, apiSecret string, logger *log.Logger) (*Client, error) {
+func NewClient(logger *log.Logger) (*Client, error) {
 	parsedURL, err := url.ParseRequestURI(baseURL)
 	if err != nil {
 		return nil, err
@@ -32,7 +32,15 @@ func NewClient(apiKey, apiSecret string, logger *log.Logger) (*Client, error) {
 	if logger == nil {
 		logger = discardLogger
 	}
-	return &Client{ApiKey: apiKey, ApiSecret: apiSecret, URL: parsedURL, HTTPClient: http.DefaultClient, Logger: logger}, nil
+	return &Client{URL: parsedURL, HTTPClient: http.DefaultClient, Logger: logger}, nil
+}
+
+func (c *Client) SetApiKey(apiKey string) {
+	c.ApiKey = apiKey
+}
+
+func (c *Client) SetApiSecret(apiSecret string) {
+	c.ApiSecret = apiSecret
 }
 
 func (c *Client) newRequest(ctx context.Context, method, spath string, body io.Reader) (*http.Request, error) {
