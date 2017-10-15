@@ -127,7 +127,34 @@ func (c *Client) GetUserRatedList(ctx context.Context, options map[string]interf
 	return resp.Result, nil
 }
 
-func (c *Client) GetUserRating(ctx context.Context, handle string) (interface{}, error) {
-	//TODO
-	return nil, nil
+func (c *Client) GetUserRating(ctx context.Context, handle string) ([]RatingChange, error) {
+	c.Logger.Println("GetUserRating :", handle)
+
+	v := url.Values{}
+	v.Add("handle", handle)
+
+	spath := "/user.rating" + "?" + v.Encode()
+	req, err := c.newRequest(ctx, "GET", spath, nil)
+	if err != nil {
+		return nil, err
+	}
+	res, err := c.HTTPClient.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	type Response struct {
+		Status string         `json:"status"`
+		Result []RatingChange `json:"result"`
+	}
+	var resp Response
+	if err := decodeBody(res, &resp); err != nil {
+		return nil, err
+	}
+
+	//check status
+	if resp.Status != "OK" {
+		return nil, fmt.Errorf("Status Error : %s", resp.Status)
+	}
+
+	return resp.Result, nil
 }
