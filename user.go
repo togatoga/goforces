@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/url"
+	"strconv"
 	"strings"
 )
 
@@ -145,6 +146,56 @@ func (c *Client) GetUserRating(ctx context.Context, handle string) ([]RatingChan
 	type Response struct {
 		Status string         `json:"status"`
 		Result []RatingChange `json:"result"`
+	}
+	var resp Response
+	if err := decodeBody(res, &resp); err != nil {
+		return nil, err
+	}
+
+	//check status
+	if resp.Status != "OK" {
+		return nil, fmt.Errorf("Status Error : %s", resp.Status)
+	}
+
+	return resp.Result, nil
+}
+
+func (c *Client) GetUserStatus(ctx context.Context, handle string, options map[string]interface{}) ([]Submission, error) {
+	c.Logger.Println("GetUserRating :", handle)
+
+	v := url.Values{}
+	v.Add("handle", handle)
+
+	//check options
+	from, ok := options["from"]
+	if ok {
+		fromVal := from.(int)
+		if fromVal <= 0 {
+			return nil, fmt.Errorf("from must be at least 1")
+		}
+		v.Add("from", strconv.Itoa(fromVal))
+	}
+	count, ok := options["count"]
+	if ok {
+		countVal := count.(int)
+		if countVal <= 0 {
+			return nil, fmt.Errorf("count must be at least 1")
+		}
+		v.Add("count", strconv.Itoa(countVal))
+	}
+
+	spath := "/user.status" + "?" + v.Encode()
+	req, err := c.newRequest(ctx, "GET", spath, nil)
+	if err != nil {
+		return nil, err
+	}
+	res, err := c.HTTPClient.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	type Response struct {
+		Status string       `json:"status"`
+		Result []Submission `json:"result"`
 	}
 	var resp Response
 	if err := decodeBody(res, &resp); err != nil {
