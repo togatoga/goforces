@@ -2,10 +2,13 @@ package goforces
 
 import (
 	"context"
+	"crypto/sha512"
 	"fmt"
+	rand2 "math/rand"
 	"net/url"
 	"strconv"
 	"strings"
+	time2 "time"
 )
 
 type User struct {
@@ -77,7 +80,8 @@ func (c *Client) GetUserInfo(ctx context.Context, handles []string) ([]User, err
 		Result []User `json:"result"`
 	}
 	var resp Response
-	if err := decodeBody(res, &resp); err != nil {
+	if err := decodeBody(
+		res, &resp); err != nil {
 		return nil, err
 	}
 
@@ -185,6 +189,62 @@ func (c *Client) GetUserStatus(ctx context.Context, handle string, options map[s
 	}
 
 	spath := "/user.status" + "?" + v.Encode()
+	req, err := c.newRequest(ctx, "GET", spath, nil)
+	if err != nil {
+		return nil, err
+	}
+	res, err := c.HTTPClient.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	type Response struct {
+		Status string       `json:"status"`
+		Result []Submission `json:"result"`
+	}
+	var resp Response
+	if err := decodeBody(res, &resp); err != nil {
+		return nil, err
+	}
+
+	//check status
+	if resp.Status != "OK" {
+		return nil, fmt.Errorf("Status Error : %s", resp.Status)
+	}
+
+	return resp.Result, nil
+}
+
+func (c *Client) GetUserFriends(ctx context.Context, options map[string]interface{}) ([]Member, error) {
+	c.Logger.Println("GetUserFriends :", options)
+
+	v := url.Values{}
+
+	//check api key and scret
+	if c.ApiKey == "" || c.ApiSecret == "" {
+		return nil, fmt.Errorf("GetUserFriends requires your api key and api secret")
+	}
+
+	v.Add("apiKey", c.ApiKey)
+	v.Add("time", strconv.FormatInt(time2.Now().Unix(), 10))
+	//check options
+	onlyOnline, ok := options["onlyOnline"]
+	if ok {
+		onlyOnlineVal := onlyOnline.(bool)
+		if onlyOnlineVal {
+			v.Add("onlyOnline", "true")
+		}
+	}
+	//set api sig
+	rand2.Seed(time2.Now().UnixNano())
+	rand := ""
+	for i := 0; i < 6; i++ {
+		rand += strconv.Itoa(rand2.Intn(10))
+	}
+	hash := rand + "/user.friends?" + v.Encode() + "#" + c.ApiSecret
+	apiSig := rand + string(sha512.Sum512([]byte(hash)))
+	v.Add("apiSig", string(apiSig))
+
+	spath := "/user.friends" + "?" + v.Encode()
 	req, err := c.newRequest(ctx, "GET", spath, nil)
 	if err != nil {
 		return nil, err
