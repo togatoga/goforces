@@ -26,6 +26,37 @@ type User struct {
 	MaxRank                 string `json:"maxRank"`
 }
 
+func (c *Client) GetUserBlogEntries(ctx context.Context, handle string) ([]BlogEntry, error) {
+	c.Logger.Println("GetUserBlogEntries :", handle)
+
+	v := url.Values{}
+	v.Add("handle", handle)
+	spath := "/user.blogEntries" + "?" + v.Encode()
+	req, err := c.newRequest(ctx, "GET", spath, nil)
+	if err != nil {
+		return nil, err
+	}
+	res, err := c.HTTPClient.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	type Response struct {
+		Status string      `json:"status"`
+		Result []BlogEntry `json:"result"`
+	}
+	var resp Response
+	if err := decodeBody(res, &resp); err != nil {
+		return nil, err
+	}
+
+	//check status
+	if resp.Status != "OK" {
+		return nil, fmt.Errorf("Status Error : %s", resp.Status)
+	}
+
+	return resp.Result, nil
+}
+
 func (c *Client) GetUserInfo(ctx context.Context, handles []string) ([]User, error) {
 	c.Logger.Println("GetUserInfo :", handles)
 
