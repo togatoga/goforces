@@ -8,10 +8,47 @@ goforces is go package for the codeforces(http://codeforces.com/) api
 go get github.com/togatoga/goforces
 ```
 
+## Usage
+```go
+ctx := context.Background()
+
+//Codeforces client
+api, err := goforces.NewClient(nil)
+if err != nil {
+  panic(err)
+}
+
+options := map[string]interface{}{
+  "tags": []string{"dp"},
+}
+//Problems
+problems, err := api.GetProblemSetProblems(ctx, options)
+if err != nil {
+  panic(err)
+}
+fmt.Printf("%+v\n", problems)
+
+//Contest list
+contestList, err := api.GetContestList(ctx, nil)
+if err != nil {
+  panic(err)
+}
+//Contest list
+fmt.Printf("%+v\n", contestList)
+
+//Some methods is authorized by key and secret
+api.SetApiKey("<your key>")
+api.SetApiSecret("<your secret>")
+//User friends
+friends, err := api.GetUserFriends(ctx, nil)
+if err != nil {
+  panic(err)
+}
+fmt.Printf("%+v\n", friends)
+
+```
 ## Documention
 Read [Godoc](https://godoc.org/github.com/togatoga/goforces)
-
-## Examples
 
 ## License
 
