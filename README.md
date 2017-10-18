@@ -33,10 +33,9 @@ contestList, err := api.GetContestList(ctx, nil)
 if err != nil {
   panic(err)
 }
-//Contest list
 fmt.Printf("%+v\n", contestList)
 
-//Some methods is authorized by key and secret
+//If you use authorized methods, you must set your key and secret
 api.SetApiKey("<your key>")
 api.SetApiSecret("<your secret>")
 //User friends
