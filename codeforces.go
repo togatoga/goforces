@@ -1,3 +1,16 @@
+/*
+Package goforces provides tructs and functions for accessing the codeforces API.
+If the API query is successful, return Go structs.
+
+//Queries
+
+
+
+//Endpoints
+
+
+
+*/
 package goforces
 
 import (
