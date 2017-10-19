@@ -1,16 +1,23 @@
-/*
-Package goforces provides tructs and functions for accessing the codeforces API.
-If the API query is successful, return Go structs.
-
+//
+//Package goforces provides tructs and functions for accessing the codeforces API.
+//If the API query is successful, return Go struct.
+//
 //Queries
-
-
-
+//
+//Executing queries on Codeforces API is very simple.
+//Almost all of the methods don't require authentication.
+//
+//	api, _ := goforces.NewClient(nil)
+//	ctx := context.Background()
+//	problems, _ := api.GetProblemSetProblems(ctx, map[string]interface{}{"tags": []string{"graph", "dp"}})
+//	for _, problem := range problems.Problems {
+//		fmt.Printf("%+v\n", problem)
+//	}
+//
 //Endpoints
-
-
-
-*/
+//
+//Goforces implements almost all of the endpoints defined in the Codeforces API(http://codeforces.com/api/help)
+//More detailed information about the behavior of endpoint and the parameters can be found at the official Codeforces API documentation.
 package goforces
 
 import (
