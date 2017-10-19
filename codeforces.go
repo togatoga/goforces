@@ -48,6 +48,8 @@ type Client struct {
 	Logger     *log.Logger
 }
 
+//NewClient takes a logger and return a Client struct.
+//The Client struct can be use for accessing the endpoints
 func NewClient(logger *log.Logger) (*Client, error) {
 	parsedURL, err := url.ParseRequestURI(baseURL)
 	if err != nil {
@@ -60,10 +62,14 @@ func NewClient(logger *log.Logger) (*Client, error) {
 	return &Client{URL: parsedURL, HTTPClient: http.DefaultClient, Logger: logger}, nil
 }
 
+//SetApiKey takes an user api key.
+//If you use authorized methods, you must set it.
 func (c *Client) SetApiKey(apiKey string) {
 	c.ApiKey = apiKey
 }
 
+//SetApiSecret takes an user key secret.
+//If you use authorized methods, you must set it.
 func (c *Client) SetApiSecret(apiSecret string) {
 	c.ApiSecret = apiSecret
 }
