@@ -7,12 +7,14 @@ import (
 	"strconv"
 )
 
+//RecentAction represents Codeforces RecentAction
 type RecentAction struct {
 	TimeSeconds int       `json:"timeSeconds"`
 	BlogEntry   BlogEntry `json:"blogEntry"`
 	Comment     Comment   `json:"comment,omitempty"`
 }
 
+//GetRecentActions implements /recentActions
 func (c *Client) GetRecentActions(ctx context.Context, maxCount int) ([]RecentAction, error) {
 	c.Logger.Println("GetRecentActions :", maxCount)
 

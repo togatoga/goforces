@@ -7,6 +7,7 @@ import (
 	"strconv"
 )
 
+//BlogEntry represents a Codeforces BlogEntry
 type BlogEntry struct {
 	OriginalLocale          string   `json:"originalLocale"`
 	AllowViewHistory        bool     `json:"allowViewHistory"`
@@ -21,6 +22,7 @@ type BlogEntry struct {
 	Tags                    []string `json:"tags"`
 }
 
+//GetBlogEntryComments implements /blogEntry.comments
 func (c *Client) GetBlogEntryComments(ctx context.Context, blogEntryId int) ([]Comment, error) {
 	c.Logger.Println("GetBlogEntryComments : ", blogEntryId)
 	v := url.Values{}
@@ -50,6 +52,7 @@ func (c *Client) GetBlogEntryComments(ctx context.Context, blogEntryId int) ([]C
 	return resp.Result, nil
 }
 
+//GetBlogEntryView implements /blogEntry.view
 func (c *Client) GetBlogEntryView(ctx context.Context, blogEntryId int) (*BlogEntry, error) {
 	c.Logger.Println("GetBlogEntryView : ", blogEntryId)
 	v := url.Values{}

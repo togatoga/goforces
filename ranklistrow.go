@@ -1,5 +1,6 @@
 package goforces
 
+//RanklistRow represents Codeforces RanklistRow
 type RanklistRow struct {
 	Party                     Party           `json:"party"`
 	Rank                      int64           `json:"rank"`

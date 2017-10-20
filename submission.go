@@ -1,5 +1,6 @@
 package goforces
 
+//Submission represents Codeforces Submission
 type Submission struct {
 	ID                  int     `json:"id"`
 	ContestID           int     `json:"contestId"`
