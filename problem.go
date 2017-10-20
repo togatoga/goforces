@@ -1,5 +1,6 @@
 package goforces
 
+//Problem represents Codeforces problem
 type Problem struct {
 	ContestID int64    `json:"contestId"`
 	Index     string   `json:"index"`

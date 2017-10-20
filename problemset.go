@@ -8,11 +8,13 @@ import (
 	"strings"
 )
 
+//Problems represents the response from /problemset.problems
 type Problems struct {
 	Problems          []Problem           `json:"problems"`
 	ProblemStatistics []ProblemStatistics `json:"problemStatistics"`
 }
 
+//GetProblemSetProblems implements /problemset.problems
 func (c *Client) GetProblemSetProblems(ctx context.Context, options map[string]interface{}) (*Problems, error) {
 	c.Logger.Println("GetProblems : ", options)
 	v := url.Values{}
@@ -48,6 +50,7 @@ func (c *Client) GetProblemSetProblems(ctx context.Context, options map[string]i
 	return &resp.Result, nil
 }
 
+//GetProblemSetRecentStatus implements /problemset.recentStatus
 func (c *Client) GetProblemSetRecentStatus(ctx context.Context, count int) ([]Submission, error) {
 	c.Logger.Println("GetRecentStatus count: ", count)
 

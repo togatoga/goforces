@@ -1,5 +1,6 @@
 package goforces
 
+//Comment represents a Codeforces comment
 type Comment struct {
 	ID                  int    `json:"id"`
 	CreationTimeSeconds int    `json:"creationTimeSeconds"`

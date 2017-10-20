@@ -9,6 +9,7 @@ import (
 	"time"
 )
 
+//User represents Codeforces User
 type User struct {
 	LastName                string `json:"lastName"`
 	Country                 string `json:"country"`
@@ -28,6 +29,7 @@ type User struct {
 	MaxRank                 string `json:"maxRank"`
 }
 
+//GetUserBlogEntries implements /user.blogEntries
 func (c *Client) GetUserBlogEntries(ctx context.Context, handle string) ([]BlogEntry, error) {
 	c.Logger.Println("GetUserBlogEntries :", handle)
 
@@ -59,6 +61,7 @@ func (c *Client) GetUserBlogEntries(ctx context.Context, handle string) ([]BlogE
 	return resp.Result, nil
 }
 
+//GetUserInfo implements /user.info
 func (c *Client) GetUserInfo(ctx context.Context, handles []string) ([]User, error) {
 	c.Logger.Println("GetUserInfo :", handles)
 
@@ -91,6 +94,7 @@ func (c *Client) GetUserInfo(ctx context.Context, handles []string) ([]User, err
 	return resp.Result, nil
 }
 
+//GetUserRatedList implements /user.ratedList
 func (c *Client) GetUserRatedList(ctx context.Context, options map[string]interface{}) ([]User, error) {
 	c.Logger.Println("GetUserRatedList :", options)
 
@@ -130,6 +134,7 @@ func (c *Client) GetUserRatedList(ctx context.Context, options map[string]interf
 	return resp.Result, nil
 }
 
+//GetUserRating implements /user.rating
 func (c *Client) GetUserRating(ctx context.Context, handle string) ([]RatingChange, error) {
 	c.Logger.Println("GetUserRating :", handle)
 
@@ -162,6 +167,7 @@ func (c *Client) GetUserRating(ctx context.Context, handle string) ([]RatingChan
 	return resp.Result, nil
 }
 
+//GetUserStatus implements /user.status
 func (c *Client) GetUserStatus(ctx context.Context, handle string, options map[string]interface{}) ([]Submission, error) {
 	c.Logger.Println("GetUserRating :", handle)
 
@@ -212,6 +218,8 @@ func (c *Client) GetUserStatus(ctx context.Context, handle string, options map[s
 	return resp.Result, nil
 }
 
+//GetUserFriends implements /user.friends
+//You must your api key and secret key before call this method.
 func (c *Client) GetUserFriends(ctx context.Context, options map[string]interface{}) ([]string, error) {
 	c.Logger.Println("GetUserFriends :", options)
 

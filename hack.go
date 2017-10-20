@@ -1,5 +1,6 @@
 package goforces
 
+//Hack represents Codeforces Hack
 type Hack struct {
 	CreationTimeSeconds int64         `json:"creationTimeSeconds"`
 	Defender            Party         `json:"defender"`
@@ -11,6 +12,7 @@ type Hack struct {
 	Verdict             string        `json:"verdict"`
 }
 
+//JudgeProtocol represents Codefoces JudgeProtocol
 type JudgeProtocol struct {
 	Manual   string `json:"manual"`
 	Protocol string `json:"protocol"`

@@ -1,5 +1,6 @@
 package goforces
 
+//RatingChange represents Codeforces RatingChange
 type RatingChange struct {
 	ContestID               int64  `json:"contestId"`
 	ContestName             string `json:"contestName"`

@@ -1,5 +1,6 @@
 package goforces
 
+//ProblemResult represents codeforces ProblemResult
 type ProblemResult struct {
 	Points                    float64 `json:"points"`
 	Penalty                   int     `json:"penalty,omitempty"`

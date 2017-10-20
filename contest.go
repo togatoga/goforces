@@ -8,6 +8,7 @@ import (
 	"strings"
 )
 
+//Contest represents a Codeforces Contest
 type Contest struct {
 	DurationSeconds     int64  `json:"durationSeconds"`
 	Frozen              bool   `json:"frozen"`
@@ -19,6 +20,7 @@ type Contest struct {
 	Type                string `json:"type"`
 }
 
+//GetContestHacks implements /contest.hacks
 func (c *Client) GetContestHacks(ctx context.Context, contestId int) ([]Hack, error) {
 	c.Logger.Println("GetContestHacks contestId: ", contestId)
 	v := url.Values{}
@@ -49,6 +51,7 @@ func (c *Client) GetContestHacks(ctx context.Context, contestId int) ([]Hack, er
 	return hacks, nil
 }
 
+//GetContestList implements /contest.list
 func (c *Client) GetContestList(ctx context.Context, options map[string]interface{}) ([]Contest, error) {
 	c.Logger.Println("GetContestList : ", options)
 	v := url.Values{}
@@ -89,6 +92,7 @@ func (c *Client) GetContestList(ctx context.Context, options map[string]interfac
 	return contests, nil
 }
 
+//GetContestRatingChanges implements /contest.ratingChanges
 func (c *Client) GetContestRatingChanges(ctx context.Context, contestId int) ([]RatingChange, error) {
 	c.Logger.Println("GetContestRatingChange contestId: ", contestId)
 	v := url.Values{}
@@ -120,6 +124,7 @@ func (c *Client) GetContestRatingChanges(ctx context.Context, contestId int) ([]
 	return ratingChanges, nil
 }
 
+//GetContestStandings implements /contest.standings
 func (c *Client) GetContestStandings(ctx context.Context, contestId int, options map[string]interface{}) (*Standings, error) {
 	c.Logger.Println("GetContestStandings: ", contestId, options)
 
@@ -195,6 +200,7 @@ func (c *Client) GetContestStandings(ctx context.Context, contestId int, options
 	return &resp.Result, nil
 }
 
+//GetContestStatus implements /contest.status
 func (c *Client) GetContestStatus(ctx context.Context, contestId int, options map[string]interface{}) ([]Submission, error) {
 	c.Logger.Println("GetContestStatus: ", contestId, options)
 
