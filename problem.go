@@ -2,7 +2,7 @@ package goforces
 
 //Problem represents Codeforces problem
 type Problem struct {
-	ContestID int64    `json:"contestId"`
+	ContestID int    `json:"contestId"`
 	Index     string   `json:"index"`
 	Name      string   `json:"name"`
 	Type      string   `json:"type"`
