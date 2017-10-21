@@ -29,6 +29,18 @@ type User struct {
 	MaxRank                 string `json:"maxRank"`
 }
 
+const (
+	divsionRatingThreshold = 1900
+)
+
+// Division returns the user's division
+func (u User) Division() string {
+	if u.Rating >= divsionRatingThreshold {
+		return "Division1"
+	}
+	return "Division2"
+}
+
 //GetUserBlogEntries implements /user.blogEntries
 func (c *Client) GetUserBlogEntries(ctx context.Context, handle string) ([]BlogEntry, error) {
 	c.Logger.Println("GetUserBlogEntries :", handle)
