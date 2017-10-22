@@ -15,3 +15,11 @@ type Submission struct {
 	TimeConsumedMillis  int     `json:"timeConsumedMillis"`
 	MemoryConsumedBytes int     `json:"memoryConsumedBytes"`
 }
+
+//AC returns boolean whether submission passes all test cases
+func (s *Submission) AC() bool {
+	if s.Verdict == "OK" {
+		return true
+	}
+	return false
+}

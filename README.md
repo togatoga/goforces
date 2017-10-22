@@ -47,7 +47,7 @@ func main() {
 }
 ```
 
-The official codeforces documentation is [here](http://codeforces.com/api/help)
+The official codeforces api documentation is [here](http://codeforces.com/api/help)
 
 ## Documention
 
