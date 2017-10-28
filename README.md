@@ -1,6 +1,6 @@
 # goforces
 
-[![Build Status](https://travis-ci.org/togatoga/goforces.svg?branch=master)](https://travis-ci.org/togatoga/goforces) [![GoDoc](https://godoc.org/github.com/togatoga/goforces?status.svg)](https://godoc.org/github.com/togatoga/goforces)
+[![Build Status](https://travis-ci.org/togatoga/goforces.svg?branch=master)](https://travis-ci.org/togatoga/goforces) [![GoDoc](https://godoc.org/github.com/togatoga/goforces?status.svg)](https://godoc.org/github.com/togatoga/goforces)[![Go Report Card](https://goreportcard.com/badge/github.com/togatoga/goforces)](https://goreportcard.com/report/github.com/togatoga/goforces)
 
 goforces is go package for the codeforces(<http://codeforces.com/>) api.  
 Check the [Usage](#usage)
