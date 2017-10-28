@@ -49,6 +49,34 @@ func (u User) Div2() bool {
 	return false
 }
 
+// Color returns user's color of rating.
+// http://codeforces.com/blog/entry/20638
+func (u User) Color() string {
+	//div1
+	if u.Div1() {
+		if u.Rating >= 1900 && u.Rating < 2200 {
+			return "Violet"
+		}
+		if u.Rating >= 2200 && u.Rating < 2400 {
+			return "Orange"
+		}
+		// rating >= 2400
+		return "Red"
+	}
+	//div2
+	if u.Rating < 1200 {
+		return "Gray"
+	}
+	if u.Rating >= 1200 && u.Rating < 1400 {
+		return "Green"
+	}
+	if u.Rating >= 1400 && u.Rating < 1599 {
+		return "Cyan"
+	}
+	//1600 <= rating < 1899
+	return "Blue"
+}
+
 //GetUserBlogEntries implements /user.blogEntries
 func (c *Client) GetUserBlogEntries(ctx context.Context, handle string) ([]BlogEntry, error) {
 	c.Logger.Println("GetUserBlogEntries :", handle)
