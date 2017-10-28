@@ -20,6 +20,21 @@ type Contest struct {
 	Type                string `json:"type"`
 }
 
+//Div2 returns boolean whether contest'name contains "Div. 2"
+func (c Contest) Div2() bool {
+	return strings.Contains(c.Name, "Div. 2")
+}
+
+// Finished returns boolean whether contest was over
+func (c Contest) Finished() bool {
+	return c.Phase == "FINISHED"
+}
+
+// Before returns boolean whether contest hasn't started.
+func (c Contest) Before() bool {
+	return c.Phase == "BEFORE"
+}
+
 //GetContestHacks implements /contest.hacks
 func (c *Client) GetContestHacks(ctx context.Context, contestId int) ([]Hack, error) {
 	c.Logger.Println("GetContestHacks contestId: ", contestId)
