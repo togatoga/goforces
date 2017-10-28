@@ -40,9 +40,10 @@ const (
 	baseURL = "http://codeforces.com/api"
 )
 
+// Client manages the access for the Codeforces API.
 type Client struct {
-	ApiKey     string
-	ApiSecret  string
+	APIKey     string
+	APISecret  string
 	URL        *url.URL
 	HTTPClient *http.Client
 	Logger     *log.Logger
@@ -62,16 +63,16 @@ func NewClient(logger *log.Logger) (*Client, error) {
 	return &Client{URL: parsedURL, HTTPClient: http.DefaultClient, Logger: logger}, nil
 }
 
-//SetApiKey takes an user api key.
+//SetAPIKey takes an user api key.
 //If you use authorized methods, you must set it.
-func (c *Client) SetApiKey(apiKey string) {
-	c.ApiKey = apiKey
+func (c *Client) SetAPIKey(apiKey string) {
+	c.APIKey = apiKey
 }
 
-//SetApiSecret takes an user key secret.
+//SetAPISecret takes an user key secret.
 //If you use authorized methods, you must set it.
-func (c *Client) SetApiSecret(apiSecret string) {
-	c.ApiSecret = apiSecret
+func (c *Client) SetAPISecret(apiSecret string) {
+	c.APISecret = apiSecret
 }
 
 func (c *Client) newRequest(ctx context.Context, method, spath string, body io.Reader) (*http.Request, error) {
@@ -96,10 +97,9 @@ func decodeBody(resp *http.Response, out interface{}) error {
 	return decoder.Decode(out)
 }
 
-func generateApiSig(method, apiSecret string, urlValues url.Values) string {
+func generateAPISig(method, apiSecret string, urlValues url.Values) string {
 
 	//set api sig
-
 	rand.Seed(time.Now().UnixNano())
 
 	randSixDigits := ""

@@ -46,10 +46,10 @@ func (c Contest) ContestURL() string {
 }
 
 //GetContestHacks implements /contest.hacks
-func (c *Client) GetContestHacks(ctx context.Context, contestId int) ([]Hack, error) {
-	c.Logger.Println("GetContestHacks contestId: ", contestId)
+func (c *Client) GetContestHacks(ctx context.Context, contestID int) ([]Hack, error) {
+	c.Logger.Println("GetContestHacks contestId: ", contestID)
 	v := url.Values{}
-	v.Add("contestId", strconv.Itoa(contestId))
+	v.Add("contestId", strconv.Itoa(contestID))
 	spath := "/contest.hacks" + "?" + v.Encode()
 	req, err := c.newRequest(ctx, "GET", spath, nil)
 	if err != nil {
@@ -118,10 +118,10 @@ func (c *Client) GetContestList(ctx context.Context, options map[string]interfac
 }
 
 //GetContestRatingChanges implements /contest.ratingChanges
-func (c *Client) GetContestRatingChanges(ctx context.Context, contestId int) ([]RatingChange, error) {
-	c.Logger.Println("GetContestRatingChange contestId: ", contestId)
+func (c *Client) GetContestRatingChanges(ctx context.Context, contestID int) ([]RatingChange, error) {
+	c.Logger.Println("GetContestRatingChange contestId: ", contestID)
 	v := url.Values{}
-	v.Add("contestId", strconv.Itoa(contestId))
+	v.Add("contestId", strconv.Itoa(contestID))
 	spath := "/contest.ratingChanges" + "?" + v.Encode()
 	req, err := c.newRequest(ctx, "GET", spath, nil)
 	if err != nil {
@@ -150,11 +150,11 @@ func (c *Client) GetContestRatingChanges(ctx context.Context, contestId int) ([]
 }
 
 //GetContestStandings implements /contest.standings
-func (c *Client) GetContestStandings(ctx context.Context, contestId int, options map[string]interface{}) (*Standings, error) {
-	c.Logger.Println("GetContestStandings: ", contestId, options)
+func (c *Client) GetContestStandings(ctx context.Context, contestID int, options map[string]interface{}) (*Standings, error) {
+	c.Logger.Println("GetContestStandings: ", contestID, options)
 
 	v := url.Values{}
-	v.Add("contestId", strconv.Itoa(contestId))
+	v.Add("contestId", strconv.Itoa(contestID))
 
 	//check options
 	form, ok := options["from"]
@@ -226,11 +226,11 @@ func (c *Client) GetContestStandings(ctx context.Context, contestId int, options
 }
 
 //GetContestStatus implements /contest.status
-func (c *Client) GetContestStatus(ctx context.Context, contestId int, options map[string]interface{}) ([]Submission, error) {
-	c.Logger.Println("GetContestStatus: ", contestId, options)
+func (c *Client) GetContestStatus(ctx context.Context, contestID int, options map[string]interface{}) ([]Submission, error) {
+	c.Logger.Println("GetContestStatus: ", contestID, options)
 
 	v := url.Values{}
-	v.Add("contestId", strconv.Itoa(contestId))
+	v.Add("contestId", strconv.Itoa(contestID))
 
 	//check options
 	form, ok := options["from"]
