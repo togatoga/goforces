@@ -35,6 +35,10 @@ func (c Contest) Before() bool {
 	return c.Phase == "BEFORE"
 }
 
+func (c Contest) ContestURL() string {
+	return fmt.Sprintf("http://codeforces.com/contest/%d", c.ID)
+}
+
 //GetContestHacks implements /contest.hacks
 func (c *Client) GetContestHacks(ctx context.Context, contestId int) ([]Hack, error) {
 	c.Logger.Println("GetContestHacks contestId: ", contestId)
