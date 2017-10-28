@@ -33,12 +33,20 @@ const (
 	divsionRatingThreshold = 1900
 )
 
-// Division returns the user's division
-func (u User) Division() string {
+// Div1 returns boolean whether user belog to div1
+func (u User) Div1() bool {
 	if u.Rating >= divsionRatingThreshold {
-		return "Division1"
+		return true
 	}
-	return "Division2"
+	return false
+}
+
+// Div2 returns boolean whether user belog to div2
+func (u User) Div2() bool {
+	if u.Rating < divsionRatingThreshold {
+		return true
+	}
+	return false
 }
 
 //GetUserBlogEntries implements /user.blogEntries
