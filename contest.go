@@ -35,6 +35,12 @@ func (c Contest) Before() bool {
 	return c.Phase == "BEFORE"
 }
 
+// Coding returns boolean whether contest is now being held.
+func (c Contest) Coding() bool {
+	return c.Phase == "CODING"
+}
+
+// ContestURL returns the contest's url.
 func (c Contest) ContestURL() string {
 	return fmt.Sprintf("http://codeforces.com/contest/%d", c.ID)
 }
