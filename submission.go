@@ -16,7 +16,7 @@ type Submission struct {
 	MemoryConsumedBytes int     `json:"memoryConsumedBytes"`
 }
 
-//AC returns boolean whether submission passes all test cases
+//AC returns boolean whether submission passed all test cases
 func (s *Submission) AC() bool {
 	if s.Verdict == "OK" {
 		return true
