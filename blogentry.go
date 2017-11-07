@@ -23,10 +23,10 @@ type BlogEntry struct {
 }
 
 //GetBlogEntryComments implements /blogEntry.comments
-func (c *Client) GetBlogEntryComments(ctx context.Context, blogEntryId int) ([]Comment, error) {
-	c.Logger.Println("GetBlogEntryComments : ", blogEntryId)
+func (c *Client) GetBlogEntryComments(ctx context.Context, blogEntryID int) ([]Comment, error) {
+	c.Logger.Println("GetBlogEntryComments : ", blogEntryID)
 	v := url.Values{}
-	v.Add("blogEntryId", strconv.Itoa(blogEntryId))
+	v.Add("blogEntryId", strconv.Itoa(blogEntryID))
 	spath := "/blogEntry.comments" + "?" + v.Encode()
 	req, err := c.newRequest(ctx, "GET", spath, nil)
 	if err != nil {
@@ -53,10 +53,10 @@ func (c *Client) GetBlogEntryComments(ctx context.Context, blogEntryId int) ([]C
 }
 
 //GetBlogEntryView implements /blogEntry.view
-func (c *Client) GetBlogEntryView(ctx context.Context, blogEntryId int) (*BlogEntry, error) {
-	c.Logger.Println("GetBlogEntryView : ", blogEntryId)
+func (c *Client) GetBlogEntryView(ctx context.Context, blogEntryID int) (*BlogEntry, error) {
+	c.Logger.Println("GetBlogEntryView : ", blogEntryID)
 	v := url.Values{}
-	v.Add("blogEntryId", strconv.Itoa(blogEntryId))
+	v.Add("blogEntryId", strconv.Itoa(blogEntryID))
 	spath := "/blogEntry.view" + "?" + v.Encode()
 	req, err := c.newRequest(ctx, "GET", spath, nil)
 	if err != nil {

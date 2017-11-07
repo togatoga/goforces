@@ -274,11 +274,11 @@ func (c *Client) GetUserFriends(ctx context.Context, options map[string]interfac
 	v := url.Values{}
 
 	//check api key and scret
-	if c.ApiKey == "" || c.ApiSecret == "" {
+	if c.APIKey == "" || c.APISecret == "" {
 		return nil, fmt.Errorf("GetUserFriends requires your api key and api secret")
 	}
 
-	v.Add("apiKey", c.ApiKey)
+	v.Add("apiKey", c.APIKey)
 	v.Add("time", strconv.FormatInt(time.Now().Unix(), 10))
 	//check options
 	onlyOnline, ok := options["onlyOnline"]
@@ -288,7 +288,7 @@ func (c *Client) GetUserFriends(ctx context.Context, options map[string]interfac
 			v.Add("onlyOnline", "true")
 		}
 	}
-	apiSig := generateApiSig("user.friends", c.ApiSecret, v)
+	apiSig := generateAPISig("user.friends", c.APISecret, v)
 	v.Add("apiSig", apiSig)
 
 	spath := "/user.friends" + "?" + v.Encode()
