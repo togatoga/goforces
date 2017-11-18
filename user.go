@@ -84,7 +84,7 @@ func (c *Client) GetUserBlogEntries(ctx context.Context, handle string) ([]BlogE
 	v := url.Values{}
 	v.Add("handle", handle)
 	spath := "/user.blogEntries" + "?" + v.Encode()
-	req, err := c.newRequest(ctx, "GET", spath, nil)
+	req, err := c.newRequest(ctx, "GET", spath, nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -116,7 +116,7 @@ func (c *Client) GetUserInfo(ctx context.Context, handles []string) ([]User, err
 	v := url.Values{}
 	v.Add("handles", strings.Join(handles, ";"))
 	spath := "/user.info" + "?" + v.Encode()
-	req, err := c.newRequest(ctx, "GET", spath, nil)
+	req, err := c.newRequest(ctx, "GET", spath, nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -142,22 +142,28 @@ func (c *Client) GetUserInfo(ctx context.Context, handles []string) ([]User, err
 	return resp.Result, nil
 }
 
-//GetUserRatedList implements /user.ratedList
-func (c *Client) GetUserRatedList(ctx context.Context, options map[string]interface{}) ([]User, error) {
-	c.Logger.Println("GetUserRatedList :", options)
+//UserRatedListOptions represents the options of /user.ratedlist
+type UserRatedListOptions struct {
+	ActiveOnly bool
+}
 
-	v := url.Values{}
-	//check activeOnly
-	activeOnly, ok := options["activeOnly"]
-	if ok {
-		activeOnlyVal := activeOnly.(bool)
-		if activeOnlyVal {
-			v.Add("activeOnly", "true")
-		}
+func (o *UserRatedListOptions) options() interface{} {
+	if o == nil {
+		return nil
 	}
+	type option struct {
+		ActiveOnly bool `url:"activeOnly,omitempty"`
+	}
+	return &option{ActiveOnly: o.ActiveOnly}
+}
 
-	spath := "/user.ratedList" + "?" + v.Encode()
-	req, err := c.newRequest(ctx, "GET", spath, nil)
+//GetUserRatedList implements /user.ratedList
+func (c *Client) GetUserRatedList(ctx context.Context, options *UserRatedListOptions) ([]User, error) {
+	c.Logger.Println("GetUserRatedList :", options)
+	v := url.Values{}
+
+	spath := "/user.ratedList" + "?" + v.Encode() + "&"
+	req, err := c.newRequest(ctx, "GET", spath, options, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -190,7 +196,7 @@ func (c *Client) GetUserRating(ctx context.Context, handle string) ([]RatingChan
 	v.Add("handle", handle)
 
 	spath := "/user.rating" + "?" + v.Encode()
-	req, err := c.newRequest(ctx, "GET", spath, nil)
+	req, err := c.newRequest(ctx, "GET", spath, nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -215,33 +221,31 @@ func (c *Client) GetUserRating(ctx context.Context, handle string) ([]RatingChan
 	return resp.Result, nil
 }
 
+//UserStatusOptions represents the opetions of /user.status
+type UserStatusOptions struct {
+	From  int
+	Count int
+}
+
+func (o *UserStatusOptions) options() interface{} {
+	if o == nil {
+		return nil
+	}
+	type option struct {
+		From  int `url:"from"`
+		Count int `url:"count"`
+	}
+	return &option{From: o.From, Count: o.Count}
+}
+
 //GetUserStatus implements /user.status
-func (c *Client) GetUserStatus(ctx context.Context, handle string, options map[string]interface{}) ([]Submission, error) {
+func (c *Client) GetUserStatus(ctx context.Context, handle string, options *UserStatusOptions) ([]Submission, error) {
 	c.Logger.Println("GetUserRating :", handle)
 
 	v := url.Values{}
 	v.Add("handle", handle)
-
-	//check options
-	from, ok := options["from"]
-	if ok {
-		fromVal := from.(int)
-		if fromVal <= 0 {
-			return nil, fmt.Errorf("from must be at least 1")
-		}
-		v.Add("from", strconv.Itoa(fromVal))
-	}
-	count, ok := options["count"]
-	if ok {
-		countVal := count.(int)
-		if countVal <= 0 {
-			return nil, fmt.Errorf("count must be at least 1")
-		}
-		v.Add("count", strconv.Itoa(countVal))
-	}
-
-	spath := "/user.status" + "?" + v.Encode()
-	req, err := c.newRequest(ctx, "GET", spath, nil)
+	spath := "/user.status" + "?" + v.Encode() + "&"
+	req, err := c.newRequest(ctx, "GET", spath, options.options(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -266,13 +270,27 @@ func (c *Client) GetUserStatus(ctx context.Context, handle string, options map[s
 	return resp.Result, nil
 }
 
+//UserFriendsOptions represents the opetions of /user.friends
+type UserFriendsOptions struct {
+	OnlyOnline bool
+}
+
+func (o *UserFriendsOptions) options() interface{} {
+	if o == nil {
+		return nil
+	}
+	type option struct {
+		OnlyOnline bool `url:"onlyOnline"`
+	}
+	return &option{OnlyOnline: o.OnlyOnline}
+}
+
 //GetUserFriends implements /user.friends
 //You must your api key and secret key before call this method.
-func (c *Client) GetUserFriends(ctx context.Context, options map[string]interface{}) ([]string, error) {
+func (c *Client) GetUserFriends(ctx context.Context, options *UserFriendsOptions) ([]string, error) {
 	c.Logger.Println("GetUserFriends :", options)
 
 	v := url.Values{}
-
 	//check api key and scret
 	if c.APIKey == "" || c.APISecret == "" {
 		return nil, fmt.Errorf("GetUserFriends requires your api key and api secret")
@@ -280,19 +298,11 @@ func (c *Client) GetUserFriends(ctx context.Context, options map[string]interfac
 
 	v.Add("apiKey", c.APIKey)
 	v.Add("time", strconv.FormatInt(time.Now().Unix(), 10))
-	//check options
-	onlyOnline, ok := options["onlyOnline"]
-	if ok {
-		onlyOnlineVal := onlyOnline.(bool)
-		if onlyOnlineVal {
-			v.Add("onlyOnline", "true")
-		}
-	}
 	apiSig := generateAPISig("user.friends", c.APISecret, v)
 	v.Add("apiSig", apiSig)
 
 	spath := "/user.friends" + "?" + v.Encode()
-	req, err := c.newRequest(ctx, "GET", spath, nil)
+	req, err := c.newRequest(ctx, "GET", spath, options.options(), nil)
 	if err != nil {
 		return nil, err
 	}

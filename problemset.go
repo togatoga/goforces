@@ -14,19 +14,43 @@ type Problems struct {
 	ProblemStatistics []ProblemStatistics `json:"problemStatistics"`
 }
 
-//GetProblemSetProblems implements /problemset.problems
-func (c *Client) GetProblemSetProblems(ctx context.Context, options map[string]interface{}) (*Problems, error) {
-	c.Logger.Println("GetProblems : ", options)
-	v := url.Values{}
+// ProblemSetProblemsOptions specifies the optional parameters of the problemset.problems
+type ProblemSetProblemsOptions struct {
+	Tags []string
+}
 
-	tags, ok := options["tags"]
-	if ok {
-		tagsVal := tags.([]string)
-		v.Add("tags", strings.Join(tagsVal, ";"))
+func (o *ProblemSetProblemsOptions) options() interface{} {
+	if o == nil {
+		return nil
+	}
+	type option struct {
+		Tags string `url:"tags,omitempty"`
 	}
 
-	spath := "/problemset.problems" + "?" + v.Encode()
-	req, err := c.newRequest(ctx, "GET", spath, nil)
+	return &option{Tags: strings.Join(o.Tags, ";")}
+}
+
+// ProblemSetRecentStatus specifies the optional parameters of the problemset.recentStatus
+type ProblemSetRecentStatus struct {
+	Count int
+}
+
+func (o *ProblemSetRecentStatus) options() interface{} {
+	if o == nil {
+		return nil
+	}
+	type option struct {
+		Count int `url:"count,omitempty"`
+	}
+	return &option{Count: o.Count}
+}
+
+//GetProblemSetProblems implements /problemset.problems
+func (c *Client) GetProblemSetProblems(ctx context.Context, options *ProblemSetProblemsOptions) (*Problems, error) {
+	c.Logger.Println("GetProblems : ", options)
+
+	spath := "/problemset.problems" + "?"
+	req, err := c.newRequest(ctx, "GET", spath, options.options(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -61,7 +85,7 @@ func (c *Client) GetProblemSetRecentStatus(ctx context.Context, count int) ([]Su
 	v := url.Values{}
 	v.Add("count", strconv.Itoa(count))
 	spath := "/problemset.recentStatus" + "?" + v.Encode()
-	req, err := c.newRequest(ctx, "GET", spath, nil)
+	req, err := c.newRequest(ctx, "GET", spath, nil, nil)
 	if err != nil {
 		return nil, err
 	}

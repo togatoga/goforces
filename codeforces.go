@@ -9,7 +9,7 @@
 //
 //	api, _ := goforces.NewClient(nil)
 //	ctx := context.Background()
-//	problems, _ := api.GetProblemSetProblems(ctx, map[string]interface{}{"tags": []string{"graph", "dp"}})
+//	problems, _ := api.GetProblemSetProblems(ctx, &goforces.ProblemSetProblemsOptions{Tags:[]string{"dp", "math"}})
 //	for _, problem := range problems.Problems {
 //		fmt.Printf("%+v\n", problem)
 //	}
@@ -31,9 +31,12 @@ import (
 	"math/rand"
 	"net/http"
 	"net/url"
+	"reflect"
 	"sort"
 	"strconv"
 	"time"
+
+	"github.com/google/go-querystring/query"
 )
 
 const (
@@ -75,8 +78,28 @@ func (c *Client) SetAPISecret(apiSecret string) {
 	c.APISecret = apiSecret
 }
 
-func (c *Client) newRequest(ctx context.Context, method, spath string, body io.Reader) (*http.Request, error) {
-	req, err := http.NewRequest(method, c.URL.String()+spath, body)
+func addoptions(u string, opt interface{}) (string, error) {
+
+	if opt == nil {
+		return u, nil
+	}
+	v := reflect.ValueOf(opt)
+	if v.Kind() == reflect.Ptr && v.IsNil() {
+		return u, nil
+	}
+
+	qs, err := query.Values(opt)
+	if err != nil {
+		return "", err
+	}
+	return u + qs.Encode(), nil
+}
+func (c *Client) newRequest(ctx context.Context, method, spath string, opt interface{}, body io.Reader) (*http.Request, error) {
+	url, err := addoptions(c.URL.String()+spath, opt)
+	if err != nil {
+		return nil, err
+	}
+	req, err := http.NewRequest(method, url, body)
 	if err != nil {
 		return nil, err
 	}

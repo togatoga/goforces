@@ -51,7 +51,7 @@ func (c *Client) GetContestHacks(ctx context.Context, contestID int) ([]Hack, er
 	v := url.Values{}
 	v.Add("contestId", strconv.Itoa(contestID))
 	spath := "/contest.hacks" + "?" + v.Encode()
-	req, err := c.newRequest(ctx, "GET", spath, nil)
+	req, err := c.newRequest(ctx, "GET", spath, nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -76,22 +76,18 @@ func (c *Client) GetContestHacks(ctx context.Context, contestID int) ([]Hack, er
 	return hacks, nil
 }
 
+//ContestListOptions represents the option of /contest.list
+type ContestListOptions struct {
+	Gym bool `url:"gym"`
+}
+
 //GetContestList implements /contest.list
-func (c *Client) GetContestList(ctx context.Context, options map[string]interface{}) ([]Contest, error) {
+func (c *Client) GetContestList(ctx context.Context, options *ContestListOptions) ([]Contest, error) {
 	c.Logger.Println("GetContestList : ", options)
 	v := url.Values{}
 
-	//check options
-	gym, ok := options["gym"]
-	if ok {
-		gymVal := gym.(bool)
-		if gymVal {
-			v.Add("gym", "true")
-		}
-	}
-
-	spath := "/contest.list" + "?" + v.Encode()
-	req, err := c.newRequest(ctx, "GET", spath, nil)
+	spath := "/contest.list" + "?" + v.Encode() + "&"
+	req, err := c.newRequest(ctx, "GET", spath, options, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -123,7 +119,7 @@ func (c *Client) GetContestRatingChanges(ctx context.Context, contestID int) ([]
 	v := url.Values{}
 	v.Add("contestId", strconv.Itoa(contestID))
 	spath := "/contest.ratingChanges" + "?" + v.Encode()
-	req, err := c.newRequest(ctx, "GET", spath, nil)
+	req, err := c.newRequest(ctx, "GET", spath, nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -149,57 +145,38 @@ func (c *Client) GetContestRatingChanges(ctx context.Context, contestID int) ([]
 	return ratingChanges, nil
 }
 
+//ContestStatndingsOptions represents the option of /contest.standings
+type ContestStatndingsOptions struct {
+	From           int
+	Count          int
+	Handles        []string
+	Room           int
+	ShowUnofficial bool
+}
+
+func (o *ContestStatndingsOptions) options() interface{} {
+	if o == nil {
+		return nil
+	}
+	type option struct {
+		From           int    `url:"from"`
+		Count          int    `url:"count"`
+		Handles        string `url:"handles"`
+		Room           int    `url:"room"`
+		ShowUnofficial bool   `url:"showUnofficial"`
+	}
+	return &option{From: o.From, Count: o.Count, Handles: strings.Join(o.Handles, ";"), Room: o.Room, ShowUnofficial: o.ShowUnofficial}
+}
+
 //GetContestStandings implements /contest.standings
-func (c *Client) GetContestStandings(ctx context.Context, contestID int, options map[string]interface{}) (*Standings, error) {
+func (c *Client) GetContestStandings(ctx context.Context, contestID int, options *ContestStatndingsOptions) (*Standings, error) {
 	c.Logger.Println("GetContestStandings: ", contestID, options)
 
 	v := url.Values{}
 	v.Add("contestId", strconv.Itoa(contestID))
 
-	//check options
-	form, ok := options["from"]
-	if ok {
-		formVal := form.(int)
-		if formVal <= 0 {
-			return nil, fmt.Errorf("from must starts with 1-based index")
-		}
-		v.Add("from", strconv.Itoa(formVal))
-	}
-
-	count, ok := options["count"]
-	if ok {
-		countVal := count.(int)
-		if countVal <= 0 {
-			return nil, fmt.Errorf("count must be at least 1")
-		}
-		v.Add("count", strconv.Itoa(countVal))
-	}
-
-	handles, ok := options["handles"]
-	if ok {
-		handlesVal := handles.([]string)
-		v.Add("handles", strings.Join(handlesVal, ";"))
-	}
-
-	room, ok := options["room"]
-	if ok {
-		roomVal := room.(int)
-		if roomVal <= 0 {
-			return nil, fmt.Errorf("room must be at least 1")
-		}
-		v.Add("room", strconv.Itoa(roomVal))
-	}
-
-	showUnofficial, ok := options["showUnofficial"]
-	if ok {
-		showUnofficialVal := showUnofficial.(bool)
-		if showUnofficialVal {
-			v.Add("showUnofficial", "true")
-		}
-	}
-
-	spath := "/contest.standings" + "?" + v.Encode()
-	req, err := c.newRequest(ctx, "GET", spath, nil)
+	spath := "/contest.standings" + "?" + v.Encode() + "&"
+	req, err := c.newRequest(ctx, "GET", spath, options.options(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -225,40 +202,35 @@ func (c *Client) GetContestStandings(ctx context.Context, contestID int, options
 	return &resp.Result, nil
 }
 
+//ContestStatusOptions represents the option of /contest.status
+type ContestStatusOptions struct {
+	From   int
+	Count  int
+	Handle string
+}
+
+func (o *ContestStatusOptions) options() interface{} {
+	if o == nil {
+		return nil
+	}
+	type option struct {
+		From   int    `url:"from"`
+		Count  int    `url:"count"`
+		Handle string `url:"handle"`
+	}
+	return &option{From: o.From, Count: o.Count, Handle: o.Handle}
+}
+
 //GetContestStatus implements /contest.status
-func (c *Client) GetContestStatus(ctx context.Context, contestID int, options map[string]interface{}) ([]Submission, error) {
+func (c *Client) GetContestStatus(ctx context.Context, contestID int, options *ContestStatusOptions) ([]Submission, error) {
 	c.Logger.Println("GetContestStatus: ", contestID, options)
 
 	v := url.Values{}
 	v.Add("contestId", strconv.Itoa(contestID))
 
 	//check options
-	form, ok := options["from"]
-	if ok {
-		formVal := form.(int)
-		if formVal <= 0 {
-			return nil, fmt.Errorf("from must starts with 1-based index")
-		}
-		v.Add("from", strconv.Itoa(formVal))
-	}
-
-	count, ok := options["count"]
-	if ok {
-		countVal := count.(int)
-		if countVal <= 0 {
-			return nil, fmt.Errorf("count must be at least 1")
-		}
-		v.Add("count", strconv.Itoa(countVal))
-	}
-
-	handles, ok := options["handle"]
-	if ok {
-		handleVal := handles.(string)
-		v.Add("handle", handleVal)
-	}
-
-	spath := "/contest.status" + "?" + v.Encode()
-	req, err := c.newRequest(ctx, "GET", spath, nil)
+	spath := "/contest.status" + "?" + v.Encode() + "&"
+	req, err := c.newRequest(ctx, "GET", spath, options.options(), nil)
 	if err != nil {
 		return nil, err
 	}
