@@ -24,9 +24,10 @@ import (
 
 func main() {
     ctx := context.Background()
-
+    //logger
+    logger := log.New(os.Stderr, "*** ", log.LstdFlags)
     //Codeforces client
-    api, _ := goforces.NewClient(nil)
+    api, _ := goforces.NewClient(logger)
     //Problems
     problems, _ := api.GetProblemSetProblems(ctx, &goforces.ProblemSetProblemsOptions{Tags: []string{"dp"}})
     fmt.Printf("%+v\n", problems)

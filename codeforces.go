@@ -7,7 +7,8 @@
 //Executing queries on Codeforces API is very simple.
 //Almost all of the methods don't require authentication.
 //
-//	api, _ := goforces.NewClient(nil)
+//	logger := log.New(os.Stderr, "*** ", log.LstdFlags)
+//	api, _ := goforces.NewClient(logger)
 //	ctx := context.Background()
 //	problems, _ := api.GetProblemSetProblems(ctx, &goforces.ProblemSetProblemsOptions{Tags:[]string{"dp", "math"}})
 //	for _, problem := range problems.Problems {
