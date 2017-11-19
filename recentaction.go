@@ -19,14 +19,11 @@ func (c *Client) GetRecentActions(ctx context.Context, maxCount int) ([]RecentAc
 	c.Logger.Println("GetRecentActions :", maxCount)
 
 	v := url.Values{}
-	if maxCount < 0 || maxCount > 100 {
-		return nil, fmt.Errorf("maxCount must be between 0 and 100")
-	}
 	//check options
 	v.Add("maxCount", strconv.Itoa(maxCount))
 
 	spath := "/recentActions" + "?" + v.Encode()
-	req, err := c.newRequest(ctx, "GET", spath, nil)
+	req, err := c.newRequest(ctx, "GET", spath, nil, nil)
 	if err != nil {
 		return nil, err
 	}

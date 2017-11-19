@@ -27,11 +27,8 @@ func main() {
 
     //Codeforces client
     api, _ := goforces.NewClient(nil)
-    options := map[string]interface{}{
-        "tags": []string{"dp"},
-    }
     //Problems
-    problems, _ := api.GetProblemSetProblems(ctx, options)
+    problems, _ := api.GetProblemSetProblems(ctx, &goforces.ProblemSetProblemsOptions{Tags: []string{"dp"}})
     fmt.Printf("%+v\n", problems)
 
     //Contest list

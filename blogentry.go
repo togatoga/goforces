@@ -28,7 +28,7 @@ func (c *Client) GetBlogEntryComments(ctx context.Context, blogEntryID int) ([]C
 	v := url.Values{}
 	v.Add("blogEntryId", strconv.Itoa(blogEntryID))
 	spath := "/blogEntry.comments" + "?" + v.Encode()
-	req, err := c.newRequest(ctx, "GET", spath, nil)
+	req, err := c.newRequest(ctx, "GET", spath, nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -58,7 +58,7 @@ func (c *Client) GetBlogEntryView(ctx context.Context, blogEntryID int) (*BlogEn
 	v := url.Values{}
 	v.Add("blogEntryId", strconv.Itoa(blogEntryID))
 	spath := "/blogEntry.view" + "?" + v.Encode()
-	req, err := c.newRequest(ctx, "GET", spath, nil)
+	req, err := c.newRequest(ctx, "GET", spath, nil, nil)
 	if err != nil {
 		return nil, err
 	}
