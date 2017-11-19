@@ -163,7 +163,7 @@ func (c *Client) GetUserRatedList(ctx context.Context, options *UserRatedListOpt
 	v := url.Values{}
 
 	spath := "/user.ratedList" + "?" + v.Encode() + "&"
-	req, err := c.newRequest(ctx, "GET", spath, options, nil)
+	req, err := c.newRequest(ctx, "GET", spath, options.options(), nil)
 	if err != nil {
 		return nil, err
 	}
