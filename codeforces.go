@@ -115,6 +115,16 @@ func decodeBody(resp *http.Response, out interface{}) error {
 		return nil
 	}
 	if resp.StatusCode != http.StatusOK {
+		//Parse Erroer
+		type FailResponse struct {
+			Status  string `json:"status"`
+			Comment string `json:"comment"`
+		}
+		var failResponse FailResponse
+		decoder := json.NewDecoder(resp.Body)
+		if err := decoder.Decode(&failResponse); err == nil {
+			return fmt.Errorf("Request Error: %s Comment: %s", failResponse.Status, failResponse.Comment)
+		}
 		return fmt.Errorf("Request Error: %s", resp.Status)
 	}
 	decoder := json.NewDecoder(resp.Body)
