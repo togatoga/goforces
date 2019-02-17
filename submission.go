@@ -1,10 +1,10 @@
 package goforces
 
-//Submission represents Codeforces Submission
+//Submission represents a Codeforces Submission
 type Submission struct {
 	ID                  int     `json:"id"`
 	ContestID           int     `json:"contestId"`
-	CreationTimeSeconds int     `json:"creationTimeSeconds"`
+	CreationTimeSeconds int64   `json:"creationTimeSeconds"`
 	RelativeTimeSeconds int64   `json:"relativeTimeSeconds"`
 	Problem             Problem `json:"problem"`
 	Author              Party   `json:"author"`
