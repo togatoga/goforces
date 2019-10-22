@@ -6,6 +6,7 @@ import (
 	"net/url"
 	"strconv"
 	"strings"
+	"time"
 )
 
 //Contest represents a Codeforces Contest
@@ -173,9 +174,22 @@ func (c *Client) GetContestStandings(ctx context.Context, contestID int, options
 	c.Logger.Println("GetContestStandings: ", contestID, options)
 
 	v := url.Values{}
-	v.Add("contestId", strconv.Itoa(contestID))
 
-	spath := "/contest.standings" + "?" + v.Encode() + "&"
+	// Check if APIKey and APISecret exist to make an authenticated request
+	if c.APIKey != "" && c.APISecret != "" {
+		v.Add("apiKey", c.APIKey)
+		v.Add("contestId", strconv.Itoa(contestID))
+		v.Add("time", strconv.FormatInt(time.Now().Unix(), 10))
+		apiSig := generateAPISig("contest.standings", c.APISecret, v)
+		v.Add("apiSig", apiSig)
+	} else {
+		if c.APIKey != "" || c.APISecret != "" {
+			c.Logger.Println("Missing APIKey or APISecret")
+		}
+		v.Add("contestId", strconv.Itoa(contestID))
+	}
+
+	spath := "/contest.standings" + "?" + v.Encode()
 	req, err := c.newRequest(ctx, "GET", spath, options.options(), nil)
 	if err != nil {
 		return nil, err
