@@ -6,6 +6,7 @@ import (
 	"net/url"
 	"strconv"
 	"strings"
+	"time"
 )
 
 //Contest represents a Codeforces Contest
@@ -173,10 +174,52 @@ func (c *Client) GetContestStandings(ctx context.Context, contestID int, options
 	c.Logger.Println("GetContestStandings: ", contestID, options)
 
 	v := url.Values{}
-	v.Add("contestId", strconv.Itoa(contestID))
+
+	// Check if APIKey and APISecret exist to make an authenticated request
+	if c.APIKey != "" && c.APISecret != "" {
+
+		v.Add("apiKey", c.APIKey)
+		v.Add("contestId", strconv.Itoa(contestID))
+		v.Add("time", strconv.FormatInt(time.Now().Unix(), 10))
+
+		if options != nil {
+			if len(options.Handles) > 0 {
+				v.Add("handles", strings.Join(options.Handles, ";"))
+			}
+
+			if options.Count > 0 {
+				v.Add("count", string(options.Count))
+			}
+
+			if options.From > 0 {
+				v.Add("from", string(options.From))
+			}
+
+			if options.Room > 0 {
+				v.Add("room", string(options.Room))
+			}
+
+			if options.ShowUnofficial {
+				v.Add("showUnofficial", "true")
+			}
+		}
+
+		apiSig := generateAPISig("contest.standings", c.APISecret, v)
+
+		v.Add("apiSig", apiSig)
+
+		// All options is already inside the url at this point because apiSig need
+		// to hash the url having all the parameters. If options is added after the
+		// hash, CF can`t check hash properly
+		options = nil
+	} else {
+		v.Add("contestId", strconv.Itoa(contestID))
+	}
 
 	spath := "/contest.standings" + "?" + v.Encode() + "&"
+
 	req, err := c.newRequest(ctx, "GET", spath, options.options(), nil)
+
 	if err != nil {
 		return nil, err
 	}
