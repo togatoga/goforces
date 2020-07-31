@@ -240,7 +240,7 @@ func (o *UserStatusOptions) options() interface{} {
 
 //GetUserStatus implements /user.status
 func (c *Client) GetUserStatus(ctx context.Context, handle string, options *UserStatusOptions) ([]Submission, error) {
-	c.Logger.Println("GetUserRating :", handle)
+	c.Logger.Println("GetUserStatus :", handle)
 
 	v := url.Values{}
 	v.Add("handle", handle)
